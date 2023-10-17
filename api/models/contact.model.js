@@ -5,7 +5,7 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        contactName: {
+        name: {
             type: Sequelize.STRING,
             allowNull: false,
         },
