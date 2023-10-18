@@ -5,7 +5,11 @@ const Op = db.Sequelize.Op;
 
 // Create contact
 exports.create = (req, res) => {
+    console.log("Received POST request for contact creation");
+    console.log("Request Headers:", req.headers);
+
     if (!req.body.name) {
+        console.log("Name field is empty, aborting operation");
         res.status(400).send({
             message: "Name cannot be empty",
         });
@@ -16,11 +20,15 @@ exports.create = (req, res) => {
         name: req.body.name,
     };
 
+    console.log(`Attempting to create contact with name: ${contact.name}`);
+
     Contacts.create(contact)
         .then((data) => {
+            console.log("Contact successfully created:", data);
             res.send(data);
         })
         .catch((err) => {
+            console.log("Error encountered:", err);
             res.status(500).send({
                 message:
                     err.message ||
@@ -31,11 +39,15 @@ exports.create = (req, res) => {
 
 // Get all contacts
 exports.findAll = (_req, res) => {
+    console.log("Received GET request to fetch all contacts");
+
     Contacts.findAll({ include: ["phones"] })
         .then((data) => {
+            console.log(`Retrieved ${data.length} contacts`);
             res.send(data);
         })
         .catch((err) => {
+            console.log("Error encountered:", err);
             res.status(500).send({
                 message:
                     err.message ||
@@ -46,66 +58,89 @@ exports.findAll = (_req, res) => {
 
 // Get one contact by id
 exports.findOne = (req, res) => {
-    const id = req.params.id;
+    const contactId = req.params.contactId;
+    console.log(`Received GET request to fetch contact with id: ${contactId}`);
 
-    Contacts.findByPk(id, { include: ["phones"] })
+    Contacts.findByPk(contactId, { include: ["phones"] })
         .then((data) => {
             if (!data) {
+                console.log(`Contact with id ${contactId} not found`);
                 res.status(404).send({
-                    message: `Contact with id ${id} not found`,
+                    message: `Contact with id ${contactId} not found`,
                 });
             } else {
+                console.log(`Contact found:`, data);
                 res.send(data);
             }
         })
-        .catch((_err) => {
+        .catch((err) => {
+            console.log("Error encountered:", err);
             res.status(500).send({
-                message: `Error retrieving contact with id ${id}`,
+                message: `Error retrieving contact with id ${contactId}`,
             });
         });
 };
 
 // Update one contact by id
 exports.update = (req, res) => {
-    const id = req.params.id;
+    const contactId = req.params.contactId;
+    console.log(`Received PUT request to update contact with id: ${contactId}`);
 
-    Contacts.update(req.body, { where: { id } })
+    Contacts.update(req.body, { where: { contactId } })
         .then((num) => {
-            if (num == 1) {
+            console.log(`Number of records updated: ${num}`);
+
+            if (num === 1) {
                 res.send({
-                    message: `Contact with id ${id} was updated successfully`,
+                    message: `Contact with id ${contactId} was updated successfully`,
                 });
             } else {
+                console.log(
+                    `Cannot update contact with id ${contactId}. Contact not found`,
+                );
                 res.send({
-                    message: `Cannot update contact with id ${id}. Contact not found`,
+                    message: `Cannot update contact with id ${contactId}. Contact not found`,
                 });
             }
         })
-        .catch((_err) => {
+        .catch((err) => {
+            console.log("Error encountered:", err);
             res.status(500).send({
-                message: `Error updating contact with id ${id}`,
+                message: `Error updating contact with id ${contactId}`,
             });
         });
 };
 
 // Delete one contact by id
 exports.delete = (req, res) => {
-    const id = req.params.id;
+    // Log the request information
+    console.log("Received DELETE request for contact deletion");
+    console.log("Request Headers:", req.headers);
 
-    Contacts.destroy({ where: { id } })
+    const contactId = req.params.contactId;
+
+    // Log the variable
+    console.log(`Attempting to delete contact with id: ${contactId}`);
+
+    Contacts.destroy({ where: { id: contactId } })
         .then((num) => {
-            
-            if (num == 1) {
+            // Log the result of database operation
+            console.log(`Number of records deleted: ${num}`);
+
+            if (num === 1) {
                 res.send({
-                    message: `Contact with id ${id} was deleted successfully`,
+                    message: `Contact with id ${contactId} was deleted successfully`,
                 });
             } else {
                 res.send({
-                    message: `Cannot delete contact with id ${id}. Contact not found`,
+                    message: `Cannot delete contact with id ${contactId}. Contact not found`,
                 });
             }
         })
-        .catch((_err) => {
+        .catch((err) => {
+            // Log the error
+            console.log("Error encountered:", err);
+
             res.status(500).send({
                 message: `Error deleting contact with id ${id}`,
             });
