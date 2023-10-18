@@ -1,40 +1,29 @@
 import React, { useState, useEffect } from "react";
 import ContactInfo from "./ContactInfo";
+import { getContacts, createContact, deleteContact } from "./API";
 import "./App.css";
 
 function App() {
     const [name, setName] = useState("");
     const [contacts, setContacts] = useState([]);
 
-    const getData = async (url, options = {}) => {
-        const response = await fetch(url, options);
-        const data = await response.json();
-        return data;
-    };
-
-    const getContacts = async () => {
-        try {
-            const data = await getData("http://localhost:5000/api/contacts");
-            setContacts(data);
-        } catch (error) {
-            console.log("Error getting contacts:", error);
-        }
-    };
-
     // Gets contacts data from an API endpoint using useEffect hook.
     useEffect(() => {
-        getContacts();
+        const fetchContacts = async () => {
+            try {
+                const data = await getContacts();
+                setContacts(data);
+            } catch (error) {
+                console.log("Error getting contacts:", error);
+            }
+        };
+
+        fetchContacts();
     }, []);
 
-    const createContact = async () => {
+    const handleCreateContact = async () => {
         try {
-            const data = await getData("http://localhost:5000/api/contacts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name }),
-            });
+            const data = await createContact(name);
             setContacts([...contacts, data]); // Add the new contact to the existing contacts array
             setName(""); // Clear the input field after creating the contact
         } catch (error) {
@@ -42,11 +31,9 @@ function App() {
         }
     };
 
-    const deleteContact = async (id) => {
+    const handleDeleteContact = async (id) => {
         try {
-            await getData(`http://localhost:5000/api/contacts/${id}`, {
-                method: "DELETE",
-            });
+            await deleteContact(id);
             // Filter out the deleted contact from the contacts array
             setContacts(contacts.filter((contact) => contact.id !== id));
         } catch (error) {
@@ -82,18 +69,20 @@ function App() {
                                 alert("Name cannot be empty");
                                 return; // If name is empty, exit the function
                             }
-                            createContact();
+                            handleCreateContact();
                         }}
                     >
                         Create Contact
                     </button>
                 </div>
                 <div className="contacts-list">
-                    {contacts.map((setContacts) => (
+                    {contacts.map((contact) => (
                         <ContactInfo
-                            key={setContacts.id}
-                            contact={setContacts}
-                            deleteContact={deleteContact}
+                            key={contact.id}
+                            contact={contact}
+                            deleteContact={() =>
+                                handleDeleteContact(contact.id)
+                            }
                         />
                     ))}
                 </div>
