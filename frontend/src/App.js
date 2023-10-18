@@ -80,9 +80,7 @@ function App() {
                         <ContactInfo
                             key={contact.id}
                             contact={contact}
-                            deleteContact={() =>
-                                handleDeleteContact(contact.id)
-                            }
+                            deleteContact={handleDeleteContact}
                         />
                     ))}
                 </div>
