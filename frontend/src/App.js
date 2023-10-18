@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react"; // import useEffect
+import React, { useState, useEffect } from "react";
+import ContactInfo from "./ContactInfo";
 import "./App.css";
 
 function App() {
     const [name, setName] = useState("");
     const [contacts, setContacts] = useState([]);
 
-    // Helper function to make a GET request to an API endpoint
     const getData = async (url, options = {}) => {
         const response = await fetch(url, options);
         const data = await response.json();
         return data;
     };
 
-    // Helper function to make a POST request to an API endpoint
     const getContacts = async () => {
         try {
             const data = await getData("http://localhost:5000/api/contacts");
@@ -48,6 +47,7 @@ function App() {
             await getData(`http://localhost:5000/api/contacts/${id}`, {
                 method: "DELETE",
             });
+            // Filter out the deleted contact from the contacts array
             setContacts(contacts.filter((contact) => contact.id !== id));
         } catch (error) {
             console.log("Error deleting contact:", error);
@@ -57,6 +57,7 @@ function App() {
     // TODO: Implement showStats function
     const showStats = () => {
         console.log("Showing stats");
+        alert("This feature is not implemented yet");
     };
 
     return (
@@ -102,43 +103,6 @@ function App() {
                 <p className="contacts-statistics" onClick={showStats}>
                     Show Stats
                 </p>
-            </div>
-        </div>
-    );
-}
-
-function ContactInfo({ contact, deleteContact }) {
-    return (
-        <div className="contact-card">
-            <div className="card-info">
-                <h3>{contact.name}</h3>
-                <button
-                    className="red-button"
-                    onClick={() => deleteContact(contact.id)}
-                >
-                    Delete
-                </button>
-            </div>
-            <hr />
-            <div className="card-details">
-                <div className="card-table-input">
-                    <input
-                        className="input-field"
-                        id="card-name-input"
-                        type="text"
-                        placeholder="Name"
-                    />
-                    <input
-                        className="input-field"
-                        id="card-phone-input"
-                        type="integer"
-                        placeholder="Phone Number"
-                    />
-                    <button className="green-button" id="add-button">
-                        Add
-                    </button>
-                </div>
-                <div className="card-table">{/* <table></table> */}</div>
             </div>
         </div>
     );
