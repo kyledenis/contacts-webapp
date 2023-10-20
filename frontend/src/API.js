@@ -1,13 +1,14 @@
 const API_ENDPOINT = "http://localhost:5000/api/contacts";
 
 export const getData = async (url, options = {}) => {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-        throw new Error(
-            `Failed to fetch. Error: ${response.status} ${response.statusText}`,
-        );
+    try {
+        const response = await fetch(url, options);
+        return await response.json();
     }
-    return await response.json();
+    catch (error) {
+        console.log("Error getting data:", error);
+        throw error;
+    }
 };
 
 export const getContacts = async () => {
@@ -55,6 +56,9 @@ export const getPhones = async (contactId) => {
 };
 
 export const createPhone = async (contactId, phone) => {
+    if (!phone.name || !phone.number) {
+        throw new Error("Name and number are required");
+    }
     try {
         return await getData(`${API_ENDPOINT}/${contactId}/phones`, {
             method: "POST",
