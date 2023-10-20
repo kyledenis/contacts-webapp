@@ -120,7 +120,28 @@ hr {
 
 table {
     width: 100%;
-    border: 1px solid lightgrey;
+    margin-top: 10px;
+    border-collapse: collapse;
+    display: table;
+    table-layout: fixed;
+}
+
+th, td {
+    border: 2px solid lightgray;
+    padding: 8px;
+    text-align: left;
+}
+
+th:nth-child(1), td:nth-child(1) {
+    width: 45%;
+}
+
+th:nth-child(2), td:nth-child(2) {
+    width: 45%;
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 10%;
 }
 
 .subtext {

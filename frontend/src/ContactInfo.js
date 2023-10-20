@@ -20,6 +20,10 @@ function ContactInfo({ contact, deleteContact }) {
     }, [contact.id]);
 
     const handleCreatePhone = async () => {
+        if (!phoneName || !phoneNumber) {
+            alert("Name and number are required");
+            return;
+        }
         try {
             const data = await createPhone(contact.id, {
                 name: phoneName,
@@ -96,7 +100,7 @@ function ContactInfo({ contact, deleteContact }) {
                                 <tr key={phones.id}>
                                     <td>{phones.name}</td>
                                     <td>{phones.number}</td>
-                                    <td>
+                                    <td id="delete-button-row">
                                         <button
                                             className="red-button"
                                             onClick={() =>
